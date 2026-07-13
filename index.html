@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Random Group Generator - Free Online Team Shuffler | Split by Group Count or Size</title>
+<meta name="description" content="Free online random group generator. Paste a list and instantly shuffle people into groups by group count or people per group. Great for classrooms, team building, book clubs, and fair draws. No sign-up, copy results in one click.">
+<link rel="canonical" href="https://yourdomain.com/en/">
+<link rel="alternate" hreflang="zh-CN" href="https://yourdomain.com/">
+<link rel="alternate" hreflang="en" href="https://yourdomain.com/en/">
+<link rel="alternate" hreflang="x-default" href="https://yourdomain.com/">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is the grouping truly random, or could it favor certain people?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes, it's truly random. The tool first shuffles the entire list with the Fisher-Yates algorithm, then deals names into groups in order, so every person has an equal chance of landing in any group — there's no way to bias the outcome." }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens if the group size doesn't divide evenly?",
+      "acceptedAnswer": { "@type": "Answer", "text": "The tool automatically works out how many groups are needed and spreads any remainder evenly across them, so group sizes never differ by more than one person." }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens with duplicate names in my list?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Turn on \"Automatically remove duplicate names\" to strip exact duplicates before grouping. Leave it off to keep duplicates — useful if you're distinguishing same-named people with IDs or numbers." }
+    },
+    {
+      "@type": "Question",
+      "name": "How many people can this tool handle at once?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Everything runs locally in your browser, so there's no hard limit — lists from a handful of people to several hundred shuffle instantly. For very large lists, splitting by people-per-group keeps each group a manageable size." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is my list uploaded or stored anywhere?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. Every name and every result is computed and displayed only in your own browser — nothing is uploaded or stored on any server, and everything clears when you refresh the page." }
+    }
+  ]
+}
+</script>
+
+<style>
+  :root{
+    --bg:#F1EFE7;
+    --surface:#FFFFFF;
+    --surface-2:#E8E4D8;
+    --border:#D9D3C2;
+    --ink:#20242A;
+    --ink-soft:#5B6068;
+    --accent:#2F5D53;
+    --accent-strong:#1F433C;
+    --accent-tint:#DCE7E3;
+    --cta:#C98A2E;
+    --cta-strong:#A96F1E;
+    --cta-ink:#241800;
+    --danger:#B4432B;
+    --segmented-ink:#FFFFFF;
+    --font-display: ui-serif, Georgia, "Iowan Old Style", "Noto Serif SC", "Songti SC", serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    --font-mono: ui-monospace, "SFMono-Regular", Consolas, "Cascadia Mono", monospace;
+    --radius: 10px;
+    --shadow: 0 1px 2px rgba(32,36,42,0.06), 0 6px 20px -8px rgba(32,36,42,0.18);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#181C1B;
+      --surface:#202523;
+      --surface-2:#262B29;
+      --border:#333A37;
+      --ink:#EDEAE1;
+      --ink-soft:#A8AFA9;
+      --accent:#6FBFAE;
+      --accent-strong:#8FD4C4;
+      --accent-tint:#233330;
+      --cta:#E3A94A;
+      --cta-strong:#F0BE6C;
+      --cta-ink:#241800;
+      --danger:#E08267;
+      --segmented-ink:#0F1513;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 10px 28px -10px rgba(0,0,0,0.55);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#181C1B; --surface:#202523; --surface-2:#262B29; --border:#333A37;
+    --ink:#EDEAE1; --ink-soft:#A8AFA9; --accent:#6FBFAE; --accent-strong:#8FD4C4;
+    --accent-tint:#233330; --cta:#E3A94A; --cta-strong:#F0BE6C; --cta-ink:#241800; --danger:#E08267;
+    --segmented-ink:#0F1513;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 10px 28px -10px rgba(0,0,0,0.55);
+  }
+  :root[data-theme="light"]{
+    --bg:#F1EFE7; --surface:#FFFFFF; --surface-2:#E8E4D8; --border:#D9D3C2;
+    --ink:#20242A; --ink-soft:#5B6068; --accent:#2F5D53; --accent-strong:#1F433C;
+    --accent-tint:#DCE7E3; --cta:#C98A2E; --cta-strong:#A96F1E; --cta-ink:#241800; --danger:#B4432B;
+    --segmented-ink:#FFFFFF;
+    --shadow: 0 1px 2px rgba(32,36,42,0.06), 0 6px 20px -8px rgba(32,36,42,0.18);
+  }
+
+  *{ box-sizing:border-box; }
+  body{ margin:0; }
+  .page{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    line-height:1.6;
+    min-height:100%;
+  }
+  ::selection{ background:var(--accent-tint); color:var(--accent-strong); }
+  a{ color:var(--accent-strong); }
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+
+  .shell{ max-width:920px; margin:0 auto; padding:0 20px 64px; }
+  .wide{ max-width:960px; }
+
+  .langbar{
+    max-width:920px; margin:0 auto; padding:14px 20px 0; display:flex; justify-content:flex-end;
+  }
+  .langbar a{
+    font-family:var(--font-mono); font-size:12px; letter-spacing:.06em;
+    text-decoration:none; color:var(--ink-soft); border:1px solid var(--border);
+    border-radius:6px; padding:5px 10px;
+  }
+  .langbar a:hover{ color:var(--accent-strong); border-color:var(--accent); }
+
+  /* header */
+  header.site{
+    padding:24px 20px 28px;
+    text-align:center;
+  }
+  .mark{
+    display:inline-flex; align-items:center; gap:10px;
+    color:var(--accent-strong); margin-bottom:14px;
+  }
+  .mark svg{ width:30px; height:30px; }
+  .mark span{
+    font-family:var(--font-mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+  h1.title{
+    font-family:var(--font-display);
+    font-size:clamp(28px,4.4vw,42px);
+    font-weight:600;
+    margin:0 0 10px;
+    text-wrap:balance;
+    letter-spacing:-0.01em;
+  }
+  p.subtitle{
+    color:var(--ink-soft);
+    font-size:16px;
+    max-width:52ch;
+    margin:0 auto;
+    text-wrap:balance;
+  }
+
+  /* ad slots */
+  .ad-slot{
+    max-width:920px; margin:28px auto; padding:0 20px;
+  }
+  .ad-slot .ad-box{
+    border:1.5px dashed var(--border);
+    border-radius:var(--radius);
+    background:var(--surface-2);
+    color:var(--ink-soft);
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    display:flex; align-items:center; justify-content:center;
+    text-align:center;
+    padding:14px;
+    min-height:90px;
+  }
+  .ad-slot.banner .ad-box{ min-height:90px; }
+  .ad-slot.in-content .ad-box{ min-height:110px; }
+  .ad-slot .ad-box small{
+    display:block; font-family:var(--font-body); text-transform:none; letter-spacing:0;
+    font-size:12px; margin-top:4px; opacity:.85;
+  }
+
+  /* tool card */
+  .tool-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    box-shadow:var(--shadow);
+    padding:28px;
+  }
+  @media (max-width:560px){ .tool-card{ padding:20px 16px; } }
+
+  .field-label{
+    display:flex; align-items:baseline; justify-content:space-between;
+    font-size:13px; font-weight:600; color:var(--ink); margin-bottom:8px;
+  }
+  .field-label .count{
+    font-family:var(--font-mono); font-variant-numeric:tabular-nums; color:var(--ink-soft); font-weight:400;
+  }
+  textarea#names{
+    width:100%; min-height:150px; resize:vertical;
+    border:1px solid var(--border); border-radius:8px;
+    background:var(--bg); color:var(--ink);
+    font-family:var(--font-body); font-size:15px; padding:12px 14px;
+    line-height:1.7;
+  }
+  textarea#names::placeholder{ color:var(--ink-soft); opacity:.75; }
+
+  .row-hint{ font-size:12.5px; color:var(--ink-soft); margin-top:6px; }
+
+  .options{
+    display:grid; gap:18px; margin-top:22px;
+    grid-template-columns: 1.1fr 1fr;
+  }
+  @media (max-width:620px){ .options{ grid-template-columns:1fr; } }
+
+  .segmented{
+    display:flex; border:1px solid var(--border); border-radius:8px; overflow:hidden;
+  }
+  .segmented button{
+    flex:1; border:0; background:var(--bg); color:var(--ink-soft);
+    font-family:var(--font-body); font-size:14px; font-weight:600;
+    padding:10px 8px; cursor:pointer;
+  }
+  .segmented button + button{ border-left:1px solid var(--border); }
+  .segmented button[aria-pressed="true"]{
+    background:var(--accent); color:var(--segmented-ink, #fff);
+  }
+
+  .number-field{ display:flex; align-items:center; gap:10px; }
+  .number-field input[type="number"]{
+    width:100%; border:1px solid var(--border); border-radius:8px;
+    background:var(--bg); color:var(--ink); font-size:15px; padding:10px 12px;
+    font-family:var(--font-mono); font-variant-numeric:tabular-nums;
+  }
+  .number-field .unit{ color:var(--ink-soft); font-size:14px; white-space:nowrap; }
+
+  .checkbox-row{
+    display:flex; align-items:center; gap:8px; margin-top:16px; font-size:14px; color:var(--ink-soft);
+  }
+  .checkbox-row input{ width:16px; height:16px; accent-color:var(--accent); }
+
+  .actions{ display:flex; align-items:center; gap:12px; margin-top:24px; flex-wrap:wrap; }
+  button.btn{
+    font-family:var(--font-body); font-weight:700; font-size:15px;
+    border-radius:9px; padding:13px 22px; cursor:pointer; border:1px solid transparent;
+    transition:transform .12s ease;
+  }
+  button.btn:active{ transform:scale(.98); }
+  @media (prefers-reduced-motion:reduce){ button.btn:active{ transform:none; } }
+  button.btn.primary{ background:var(--cta); color:var(--cta-ink); }
+  button.btn.primary:hover{ background:var(--cta-strong); }
+  button.btn.ghost{
+    background:transparent; color:var(--accent-strong); border-color:var(--border);
+  }
+  button.btn.ghost:hover{ background:var(--accent-tint); }
+  button.btn:disabled{ opacity:.5; cursor:not-allowed; }
+
+  .error-msg{
+    color:var(--danger); font-size:13.5px; margin-top:10px; display:none;
+  }
+  .error-msg.show{ display:block; }
+
+  /* results */
+  #results{ margin-top:30px; }
+  .results-head{
+    display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:14px;
+    flex-wrap:wrap;
+  }
+  .results-head h2{
+    font-family:var(--font-display); font-size:19px; margin:0;
+  }
+  .results-head .meta{ font-size:12.5px; color:var(--ink-soft); font-family:var(--font-mono); }
+
+  .groups-grid{
+    display:grid; gap:14px;
+    grid-template-columns:repeat(auto-fit, minmax(200px,1fr));
+  }
+  .group-card{
+    background:var(--bg); border:1px solid var(--border); border-left:4px solid var(--group-hue, var(--accent));
+    border-radius:10px; padding:14px 16px;
+  }
+  .group-card h3{
+    margin:0 0 10px; font-size:14px; display:flex; align-items:center; gap:8px;
+  }
+  .group-card h3 .dot{
+    width:9px; height:9px; border-radius:50%; background:var(--group-hue, var(--accent)); display:inline-block;
+  }
+  .group-card h3 .n{ color:var(--ink-soft); font-weight:400; font-family:var(--font-mono); }
+  .group-card ol{ margin:0; padding-left:20px; font-size:14.5px; }
+  .group-card li{ padding:2px 0; }
+
+  .copy-status{ font-size:12.5px; color:var(--accent-strong); margin-left:4px; }
+
+  /* SEO content */
+  section.seo{ margin-top:56px; }
+  section.seo h2{
+    font-family:var(--font-display); font-size:24px; margin:0 0 16px;
+    border-bottom:1px solid var(--border); padding-bottom:10px;
+  }
+  section.seo + section.seo{ margin-top:44px; }
+
+  ol.steps{ padding-left:22px; display:grid; gap:10px; font-size:15px; }
+  ol.steps li strong{ font-family:var(--font-body); }
+
+  .usecases{
+    display:grid; gap:14px;
+    grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+  }
+  .usecase{
+    background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 18px;
+  }
+  .usecase h3{ margin:0 0 6px; font-size:15.5px; }
+  .usecase p{ margin:0; font-size:13.5px; color:var(--ink-soft); }
+
+  .faq details{
+    border-bottom:1px solid var(--border); padding:14px 2px;
+  }
+  .faq details:first-of-type{ border-top:1px solid var(--border); }
+  .faq summary{
+    cursor:pointer; font-weight:600; font-size:15px; list-style:none;
+    display:flex; justify-content:space-between; align-items:center; gap:12px;
+  }
+  .faq summary::-webkit-details-marker{ display:none; }
+  .faq summary::after{
+    content:"+"; font-family:var(--font-mono); color:var(--ink-soft); font-size:18px; flex:none;
+  }
+  .faq details[open] summary::after{ content:"–"; }
+  .faq p{ margin:10px 0 0; color:var(--ink-soft); font-size:14.5px; }
+
+  footer.site{
+    margin-top:56px; padding-top:24px; border-top:1px solid var(--border);
+    display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    font-size:12.5px; color:var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="langbar"><a href="../">中文</a></div>
+
+  <header class="site">
+    <div class="mark">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="3" y="9" width="7" height="7" rx="1.5" transform="rotate(-8 6.5 12.5)" fill="currentColor" opacity="0.9"/>
+        <rect x="14" y="8" width="7" height="7" rx="1.5" transform="rotate(10 17.5 11.5)" fill="currentColor" opacity="0.55"/>
+        <rect x="8.5" y="4" width="7" height="7" rx="1.5" transform="rotate(-2 12 7.5)" fill="currentColor" opacity="0.3"/>
+      </svg>
+      <span>Fair Draw Tool</span>
+    </div>
+    <h1 class="title">Random Group Generator</h1>
+    <p class="subtitle">Paste your list, choose how to split it, and shuffle in one click. Built for classrooms, team building, book clubs, and any fair draw.</p>
+  </header>
+
+  <div class="ad-slot banner">
+    <div class="ad-box">
+      Google AdSense Ad Slot (Top Banner)
+      <small><!-- Replace with a real ad unit:
+        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXX"
+             data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+      -->Suggested size 728×90 / responsive</small>
+    </div>
+  </div>
+
+  <main class="shell">
+    <div class="tool-card">
+
+      <div class="field-label">
+        <label for="names">Names (one per line, or comma-separated)</label>
+        <span class="count" id="nameCount">0 people</span>
+      </div>
+      <textarea id="names" placeholder="Alice&#10;Bob&#10;Carol&#10;Dave&#10;……"></textarea>
+      <div class="row-hint">Paste directly from Excel or a chat member list — the tool automatically splits on line breaks or commas.</div>
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="dedupe">
+        <label for="dedupe">Automatically remove duplicate names</label>
+      </div>
+
+      <div class="options">
+        <div>
+          <div class="field-label"><span>Split method</span></div>
+          <div class="segmented" role="group" aria-label="Split method">
+            <button type="button" id="modeGroups" aria-pressed="true">By number of groups</button>
+            <button type="button" id="modeSize" aria-pressed="false">By people per group</button>
+          </div>
+        </div>
+        <div>
+          <div class="field-label"><label for="numInput" id="numLabel">Number of groups</label></div>
+          <div class="number-field">
+            <input type="number" id="numInput" min="1" step="1" value="2" inputmode="numeric">
+            <span class="unit" id="numUnit">groups</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="error-msg" id="errorMsg" role="alert"></div>
+
+      <div class="actions">
+        <button type="button" class="btn primary" id="shuffleBtn">🎲 Shuffle &amp; Group</button>
+        <button type="button" class="btn ghost" id="reshuffleBtn" disabled>Reshuffle</button>
+        <button type="button" class="btn ghost" id="copyBtn" disabled>Copy Results</button>
+        <span class="copy-status" id="copyStatus" aria-live="polite"></span>
+      </div>
+
+      <div id="results" aria-live="polite"></div>
+    </div>
+  </main>
+
+  <div class="ad-slot in-content">
+    <div class="ad-box">
+      Google AdSense Ad Slot (In-content)
+      <small>Place between the results and the guide below. Suggested size responsive / 336×280</small>
+    </div>
+  </div>
+
+  <main class="shell wide">
+    <section class="seo" id="guide">
+      <h2>How to Use</h2>
+      <ol class="steps">
+        <li><strong>Paste your list:</strong> add everyone's name to the box above, one per line, or separated by commas.</li>
+        <li><strong>Pick a split method:</strong> "By number of groups" fits a fixed group count, like splitting into 4 teams; "By people per group" fits a fixed group size, like 5 people per group.</li>
+        <li><strong>Set the number:</strong> enter the group count or group size — the tool balances everyone automatically, so group sizes never differ by more than one person.</li>
+        <li><strong>Click "Shuffle &amp; Group":</strong> the list is randomly shuffled and dealt evenly into groups, shown instantly below with a color marker per group.</li>
+        <li><strong>Not happy with the draw?</strong> click "Reshuffle" to re-draw the same list, or "Copy Results" to paste the outcome into a doc or chat.</li>
+      </ol>
+    </section>
+
+    <section class="seo" id="usecases">
+      <h2>Use Cases</h2>
+      <div class="usecases">
+        <div class="usecase">
+          <h3>Classroom Grouping</h3>
+          <p>Teachers can split students into random small groups for discussion, debate, or group work — no more accusations of favoritism.</p>
+        </div>
+        <div class="usecase">
+          <h3>Team Building Activities</h3>
+          <p>Split a company outing or icebreaker into even teams and display the result on screen — no manual roster juggling.</p>
+        </div>
+        <div class="usecase">
+          <h3>Book Clubs &amp; Interest Groups</h3>
+          <p>Split a community into fixed-size discussion groups, rotating who leads each topic and keeping airtime fair.</p>
+        </div>
+        <div class="usecase">
+          <h3>Judging &amp; Presentation Order</h3>
+          <p>Draw judge panels, contestant groups, or presentation order transparently and reproducibly, with no room for dispute.</p>
+        </div>
+        <div class="usecase">
+          <h3>Party Games</h3>
+          <p>Split birthdays, dinners, or game nights into tables or teams in seconds to keep the energy up.</p>
+        </div>
+        <div class="usecase">
+          <h3>Shift &amp; Task Assignment</h3>
+          <p>Randomly assign people to shifts or task groups as a fair, unbiased starting point for scheduling.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="seo faq" id="faq">
+      <h2>Frequently Asked Questions (FAQ)</h2>
+
+      <details>
+        <summary>Is the grouping truly random, or could it favor certain people?</summary>
+        <p>Yes, it's truly random. The tool first shuffles the entire list with the Fisher-Yates algorithm, then deals names into groups in order, so every person has an equal chance of landing in any group — there's no way to bias the outcome.</p>
+      </details>
+      <details>
+        <summary>What happens if the group size doesn't divide evenly?</summary>
+        <p>The tool automatically works out how many groups are needed and spreads any remainder evenly across them, so group sizes never differ by more than one person.</p>
+      </details>
+      <details>
+        <summary>What happens with duplicate names in my list?</summary>
+        <p>Turn on "Automatically remove duplicate names" to strip exact duplicates before grouping. Leave it off to keep duplicates — useful if you're distinguishing same-named people with IDs or numbers.</p>
+      </details>
+      <details>
+        <summary>How many people can this tool handle at once?</summary>
+        <p>Everything runs locally in your browser, so there's no hard limit — lists from a handful of people to several hundred shuffle instantly. For very large lists, splitting by people-per-group keeps each group a manageable size.</p>
+      </details>
+      <details>
+        <summary>Is my list uploaded or stored anywhere?</summary>
+        <p>No. Every name and every result is computed and displayed only in your own browser — nothing is uploaded or stored on any server, and everything clears when you refresh the page.</p>
+      </details>
+    </section>
+
+    <div class="ad-slot banner" style="margin-left:0;margin-right:0;padding:0;max-width:none;">
+      <div class="ad-box">
+        Google AdSense Ad Slot (Bottom Banner)
+        <small>Suggested size 728×90 / responsive, placed just above the footer</small>
+      </div>
+    </div>
+
+    <footer class="site">
+      <span>© <span id="year"></span> Random Group Generator · All calculations run locally in your browser — no data uploaded</span>
+      <span>Fair Draw Tool</span>
+    </footer>
+  </main>
+</div>
+
+<script>
+(function(){
+  const namesEl = document.getElementById('names');
+  const nameCountEl = document.getElementById('nameCount');
+  const dedupeEl = document.getElementById('dedupe');
+  const modeGroupsBtn = document.getElementById('modeGroups');
+  const modeSizeBtn = document.getElementById('modeSize');
+  const numInput = document.getElementById('numInput');
+  const numLabel = document.getElementById('numLabel');
+  const numUnit = document.getElementById('numUnit');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const reshuffleBtn = document.getElementById('reshuffleBtn');
+  const copyBtn = document.getElementById('copyBtn');
+  const copyStatus = document.getElementById('copyStatus');
+  const errorMsg = document.getElementById('errorMsg');
+  const resultsEl = document.getElementById('results');
+
+  let mode = 'groups';
+  let lastNames = [];
+  let lastGroups = null;
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  function parseNames(){
+    const raw = namesEl.value.split(/[\n,]/).map(s => s.trim()).filter(Boolean);
+    return dedupeEl.checked ? Array.from(new Set(raw)) : raw;
+  }
+
+  function updateCount(){
+    nameCountEl.textContent = parseNames().length + ' people';
+  }
+  namesEl.addEventListener('input', updateCount);
+  dedupeEl.addEventListener('change', updateCount);
+
+  function setMode(next){
+    mode = next;
+    modeGroupsBtn.setAttribute('aria-pressed', String(mode === 'groups'));
+    modeSizeBtn.setAttribute('aria-pressed', String(mode === 'size'));
+    if (mode === 'groups'){
+      numLabel.textContent = 'Number of groups';
+      numUnit.textContent = 'groups';
+      numInput.value = numInput.value || 2;
+    } else {
+      numLabel.textContent = 'People per group';
+      numUnit.textContent = 'people/group';
+      numInput.value = numInput.value || 4;
+    }
+  }
+  modeGroupsBtn.addEventListener('click', () => setMode('groups'));
+  modeSizeBtn.addEventListener('click', () => setMode('size'));
+
+  function shuffle(arr){
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function buildGroups(names, groupCount){
+    const groups = Array.from({length: groupCount}, () => []);
+    names.forEach((name, i) => groups[i % groupCount].push(name));
+    return groups;
+  }
+
+  function showError(msg){
+    errorMsg.textContent = msg;
+    errorMsg.classList.add('show');
+  }
+  function clearError(){
+    errorMsg.classList.remove('show');
+    errorMsg.textContent = '';
+  }
+
+  function renderGroups(groups){
+    lastGroups = groups;
+    const totalPeople = groups.reduce((n, g) => n + g.length, 0);
+    const head = document.createElement('div');
+    head.className = 'results-head';
+    head.innerHTML =
+      '<h2>Results</h2>' +
+      '<span class="meta">' + groups.length + ' groups · ' + totalPeople + ' people total</span>';
+
+    const grid = document.createElement('div');
+    grid.className = 'groups-grid';
+
+    groups.forEach((members, i) => {
+      const hue = Math.round((360 / groups.length) * i);
+      const card = document.createElement('div');
+      card.className = 'group-card';
+      card.style.setProperty('--group-hue', 'hsl(' + hue + ' 55% 42%)');
+      const h3 = document.createElement('h3');
+      h3.innerHTML = '<span class="dot"></span>Group ' + (i + 1) + ' <span class="n">(' + members.length + ' people)</span>';
+      const ol = document.createElement('ol');
+      members.forEach(m => {
+        const li = document.createElement('li');
+        li.textContent = m;
+        ol.appendChild(li);
+      });
+      card.appendChild(h3);
+      card.appendChild(ol);
+      grid.appendChild(card);
+    });
+
+    resultsEl.innerHTML = '';
+    resultsEl.appendChild(head);
+    resultsEl.appendChild(grid);
+
+    reshuffleBtn.disabled = false;
+    copyBtn.disabled = false;
+    copyStatus.textContent = '';
+  }
+
+  function runShuffle(){
+    clearError();
+    const names = parseNames();
+    lastNames = names;
+
+    if (names.length < 2){
+      showError('Please enter at least 2 names before grouping.');
+      resultsEl.innerHTML = '';
+      reshuffleBtn.disabled = true;
+      copyBtn.disabled = true;
+      return;
+    }
+
+    const n = parseInt(numInput.value, 10);
+    if (!n || n < 1){
+      showError('Please enter a number greater than 0.');
+      return;
+    }
+
+    let groupCount;
+    if (mode === 'groups'){
+      groupCount = Math.min(n, names.length);
+      if (n > names.length){
+        showError('Group count can\'t exceed the total number of people — adjusted to ' + groupCount + ' groups.');
+      }
+    } else {
+      groupCount = Math.max(1, Math.ceil(names.length / n));
+    }
+
+    const shuffled = shuffle(names);
+    renderGroups(buildGroups(shuffled, groupCount));
+  }
+
+  function runReshuffle(){
+    if (!lastNames.length) return;
+    const groupCount = lastGroups ? lastGroups.length : 1;
+    renderGroups(buildGroups(shuffle(lastNames), groupCount));
+  }
+
+  shuffleBtn.addEventListener('click', runShuffle);
+  reshuffleBtn.addEventListener('click', runReshuffle);
+
+  copyBtn.addEventListener('click', async () => {
+    if (!lastGroups) return;
+    const text = lastGroups.map((members, i) =>
+      'Group ' + (i + 1) + ' (' + members.length + ' people): ' + members.join(', ')
+    ).join('\n');
+    try{
+      await navigator.clipboard.writeText(text);
+      copyStatus.textContent = 'Copied to clipboard';
+    } catch(e){
+      copyStatus.textContent = 'Copy failed — please select the result text manually';
+    }
+    setTimeout(() => { copyStatus.textContent = ''; }, 2500);
+  });
+
+  setMode('groups');
+  updateCount();
+})();
+</script>
+</body>
+</html>
