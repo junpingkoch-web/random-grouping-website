@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -390,8 +390,8 @@
   <div class="langbar">
     <div class="lang-switch" role="group" aria-label="Language">
       <button class="lang-btn" data-lang="zh" type="button">中文</button>
-      <button class="lang-btn active" data-lang="en" type="button">EN</button>
-      <button class="lang-btn" data-lang="de" type="button">DE</button>
+      <button class="lang-btn" data-lang="en" type="button">EN</button>
+      <button class="lang-btn active" data-lang="de" type="button">DE</button>
     </div>
   </div>
 
@@ -740,7 +740,7 @@
   };
 
   const LANG_KEY = "randomGroupGenerator.lang";
-  let currentLang = "en";
+  let currentLang = "de";
   try {
     const saved = localStorage.getItem(LANG_KEY);
     if (saved && I18N[saved]) {
