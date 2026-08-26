@@ -926,6 +926,7 @@
 
     const shuffled = shuffle(names);
     renderGroups(buildGroups(shuffled, groupCount));
+    if (typeof gtag === "function") gtag("event", "tool_result_generated", { tool_name: "random-grouping-website" });
   }
 
   function runReshuffle(){
